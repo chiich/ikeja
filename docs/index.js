@@ -1,3 +1,3 @@
 $(function() {
-  $('#azpi').css({backgroundColor: 'white'});
+  $('#azpi').css({backgroundColor: "#FFFFFF"});
 });
