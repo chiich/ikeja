@@ -9,11 +9,28 @@
       body { background-color: wheat; padding 0; margin: 0; font-size: 1.65em; line-height: 1.65; }
       a { color: rebeccapurple; font-size: 125%; text-decoration: none; padding: 0; }
       #azpi { width: 480px; min-height: 320px; margin: 0 auto; border: 3px solid black; margin-top: 99px; display: flex; justify-content: center; align-items: center; }
+      #success,
+      #legacy {
+        display: none;
+      }
     </style>
   </head>
   <body>
     <div id="azpi">
       <a href="#" class="ga-link">Pay</a>
+      
+        <div id="success">
+          <p>
+            PR API success. Demo complete. No payment has been taken.
+          </p>
+        </div>
+
+        <div id="legacy">
+          <p>
+            The Payment Request API is unsupported or was cancelled or failed.
+            Here we can proceed with a fallback (not implemented for this demo).
+          </p>
+        </div>
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
