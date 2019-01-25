@@ -1,72 +1,77 @@
 $(function() {
   $('#azpi').css({backgroundColor: "#FFFFFF"});
-  
-//   if (window.Payment)
 });   
-function onBuyClicked() {
-  if (!window.PaymentRequest) {
-    // PaymentRequest API is not available. Forwarding to
-    // legacy form based experience.
-    window.location.href = '/checkout';
-    return;
-  }
 
-  // Supported payment methods
-  var supportedInstruments = [{
-      supportedMethods: ['basic-card'],
-      data: {
-        supportedNetworks: [
-          'visa', 'mastercard', 'amex', 'discover',
-          'diners', 'jcb', 'unionpay'
-        ]
-      }
-  }];
 
-  // Checkout details
-  var details = {
-    displayItems: [{
-      label: 'Original donation amount',
-      amount: { currency: 'USD', value: '65.00' }
-    }, {
-      label: 'Friends and family discount',
-      amount: { currency: 'USD', value: '-10.00' }
-    }],
-    total: {
-      label: 'Total due',
-      amount: { currency: 'USD', value : '55.00' }
+var checkoutButton = document.getElementById('hosea');
+var gaFunnel = document.getElementById('ga-funnel');
+var infoPanel = document.getElementById('info');
+var successPanel = document.getElementById('success');
+var legacyPanel = document.getElementById('legacy');
+// Feature detection
+if (window.PaymentRequest) {
+  // Payment Request is supported in this browser, so we can proceed to use it
+  var request = new PaymentRequest(buildSupportedPaymentMethodData(),
+    buildShoppingCartDetails());
+  request.canMakePayment().then(function(canMakeAFastPayment) {
+    if (canMakeAFastPayment) {
+      gaFunnel.value = '1';
+    } else {
+      gaFunnel.value = '0';
     }
-  };
+  }).catch(function(error) {
+    // The user may have turned off the querying functionality in their privacy settings. 
+    // We do not know whether they can make a fast payment, so pick a generic title.
+    gaFunnel.value = '0';
+  });
+  checkoutButton.addEventListener('click', function() {
 
-  // 1. Create a `PaymentRequest` instance
-  var request = new PaymentRequest(supportedInstruments, details);
-
-  // 2. Show the native UI with `.show()`
-  request.show()
-  // 3. Process the payment
-  .then(result => {
-    // POST the payment information to the server
-    return fetch('/pay', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(result.toJSON())
-    }).then(response => {
-      // 4. Display payment results
-      if (response.status === 200) {
-        // Payment successful
-        return result.complete('success');
-      } else {
-        // Payment failure
-        return result.complete('fail');
-      }
-    }).catch(() => {
-      return result.complete('fail');
-    });
+    request.show().then(function(paymentResponse) {
+      // Here we would process the payment. For this demo, simulate immediate success:
+      paymentResponse.complete('success')
+        .then(function() {
+          // For demo purposes:
+          infoPanel.style.display = 'none';
+          successPanel.style.display = 'block';
+        });
+    }).catch(function(error) {
+      // Handle cancelled or failed payment. For demo purposes:
+      infoPanel.style.display = 'none';
+      legacyPanel.style.display = 'block';
+    });        
+  });
+} else {
+  // Payment Request is unsupported
+  checkoutButton.addEventListener('click', function() {
+    // For demo purposes:
+    infoPanel.style.display = 'none';
+    legacyPanel.style.display = 'block';
   });
 }
-
-document.querySelector('#azpi .ga-link').addEventListener('click', onBuyClicked);
-  
+function buildSupportedPaymentMethodData() {
+  // Example supported payment methods:
+  return [{
+    supportedMethods: 'basic-card',
+    data: {
+      supportedNetworks: ['visa', 'mastercard'],
+      supportedTypes: ['debit', 'credit']
+    }
+  }];
+}
+function buildShoppingCartDetails() {
+  // Hardcoded for demo purposes:
+  return {
+    id: 'order-123',
+    displayItems: [
+      {
+        label: 'Example item',
+        amount: {currency: 'USD', value: '1.00'}
+      }
+    ],
+    total: {
+      label: 'Total',
+      amount: {currency: 'USD', value: '1.00'}
+    }
+  };
+}  
 
