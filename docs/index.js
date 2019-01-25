@@ -2,7 +2,7 @@ $(function() {
   $('#azpi').css({backgroundColor: "#FFFFFF"});
 });   
 
-var body = document.getELementsByTagName('body')[0];
+var body = document.getElementsByTagName('body')[0];
 var checkoutButton = document.getElementById('hosea');
 var gaFunnel = document.getElementById('ga-funnel');
 var infoPanel = document.getElementById('info');
