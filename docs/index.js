@@ -2,7 +2,7 @@ $(function() {
   $('#azpi').css({backgroundColor: "#FFFFFF"});
 });   
 
-
+var body = document.getELementsByTagName('body')[0];
 var checkoutButton = document.getElementById('hosea');
 var gaFunnel = document.getElementById('ga-funnel');
 var infoPanel = document.getElementById('info');
@@ -16,8 +16,10 @@ if (window.PaymentRequest) {
   request.canMakePayment().then(function(canMakeAFastPayment) {
     if (canMakeAFastPayment) {
       gaFunnel.value = '1';
+      body.classList.add('cann');
     } else {
       gaFunnel.value = '0';
+      body.classList.add('kant');
     }
   }).catch(function(error) {
     // The user may have turned off the querying functionality in their privacy settings. 
